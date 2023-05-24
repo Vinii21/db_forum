@@ -12,6 +12,7 @@ Está es una API para un foro creada con node, express, sequelize y postgres.
 - [x] Crear publicaciones en una categoria
 - [ ] Crear respuestas en una publicación
 - [ ] Solo un admin puede crear categorias 
+- [ ] Paginación de publicaciones y respuestas
 - [x] Manejo de errores
 - [x] Validadción de datos
 - [x] Autenticación
@@ -22,3 +23,4 @@ Está es una API para un foro creada con node, express, sequelize y postgres.
 
 1. Un moderador y un administrador pueden cerrar una publicación.
 > Significa que nadie más puede realizar comentarios en esa publicación
+2.Que un admin pueda aprobar las respuesta
