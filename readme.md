@@ -4,20 +4,20 @@ Está es una API para un foro creada con node, express, sequelize y postgres.
 
 ## Funcionalidades
 
-- [❌] Registro de usuario
-- [❌] Login de usuario
-- [❌] Obtener todas la categorias
-- [❌] Obtener todas las publicaciones de una categoria
-- [❌] Obtener una publicacion con us srespuestas
-- [❌] Crear publicaciones en una categoria
-- [] Crear respuestas en una publicación
-- [] Solo un admin puede crear categorias 
-- [❌] Manejo de errores
-- [❌] Validadción de datos
-- [❌] Autenticación
-- [❌] Permisos
-- [] Validar email
-- [] Recuperar contraseña
+- [x] Registro de usuario
+- [x] Login de usuario
+- [x] Obtener todas la categorias
+- [x] Obtener todas las publicaciones de una categoria
+- [x] Obtener una publicacion con us srespuestas
+- [x] Crear publicaciones en una categoria
+- [ ] Crear respuestas en una publicación
+- [ ] Solo un admin puede crear categorias 
+- [x] Manejo de errores
+- [x] Validadción de datos
+- [x] Autenticación
+- [x] Permisos
+- [ ] Validar email
+- [ ] Recuperar contraseña
 ## Reto (opcional)
 
 1. Un moderador y un administrador pueden cerrar una publicación.
