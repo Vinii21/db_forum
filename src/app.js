@@ -1,8 +1,10 @@
-const express = require("express")
-require("dotenv").config()
+const express = require("express");
+require("dotenv").config();
 const apiRoutes = require("./routes/index");
 const errorRoutes = require("./routes/errors.routes");
-const initModels = require("./models/initModels")
+const initModels = require("./models/initModels");
+
+
 
 initModels()
 

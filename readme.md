@@ -17,6 +17,7 @@ Está es una API para un foro creada con node, express, sequelize y postgres.
 - [x] Validadción de datos
 - [x] Autenticación
 - [x] Permisos
+- [x] Envio de correo
 - [ ] Validar email
 - [ ] Recuperar contraseña
 ## Reto (opcional)

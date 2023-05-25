@@ -1,15 +1,29 @@
 const Users = require("../models/users.model")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const transporter = require("../utils/mailer");
 
 const createUser = async (req, res) => {
     try{
         const {username, email, password} = req.body;
         const hashed = await bcrypt.hash(password, 11);
         await Users.create({username, email, password: hashed})
+        // de aqui para abajo no se ejecuta si create user tiene un error
+
         res.status(201).send()
+        //Enviar correo
+        transporter.sendMail({
+            from: process.env.G_USER,
+            to: email,
+            subject: "Probando Node Mailer",
+            text: "Este sería el mensaje en texto plano",
+            html: "<h1>Bienvenido al Foro</h1> <p>Espero que contribuyas y aprendas demasiado</p>"
+        })
+        .then(()=>console.log("Mensaje enviado"))
+        .catch(error=>console.log(error))
+
     } catch (error) {
-       res.status(400).json(error) 
+       next(error)
     }
 }
 
