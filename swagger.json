@@ -1,0 +1,176 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Forum API",
+    "description": "Una API para un foro donde podrás crear temas, responder publicaciones, crear tu usuario, identicarte...",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "summary": "End point para regitrar a un usuario en el foro",
+        "description": "Para que puedas crar un nuevo usuario, es necesario que proporcionar un email válido, una contraseña de al menos 8 caracteres y un nombre de usuario. Estos campos son obligatorios de lo contrario no podrás tener un nuevo usuario",
+        "tags": ["users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/register" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "El usuario fue creado satisfactoriamente"
+          },
+          "400": {
+            "description": "Faltan propiedades en el body de la petición",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errorName": {
+                      "type": "string",
+                      "example": "Validation error"
+                    },
+                    "message": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Endpoint para ingrear / loggear a un usuario en la aplicación",
+        "description": "Para poder loggear a un usuario en la aplicación necesitas enviar, un email y contraseña validos",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "perenganito@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "12345678"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    },
+    "/posts/{categoryId}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Con este endpoint podrás obtener todas las publicaciones que pertenecen a una categoria",
+        "description": "En la url es necesario colocar el id de la categoria de la cual quieres obtener las publicaciones",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "description": "El id de la categoria"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          }
+        }
+      }
+    },
+    "/posts": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Crear una nueva publicación",
+        "tags": ["posts"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "ñlaskdfgñalksjfñdskj"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "ñlaskdfgñalksjfñdskj"
+                  },
+                  "userId": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 6
+                  },
+                  "categoryId": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "register": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "Iannacus"
+          },
+          "email": {
+            "type": "string",
+            "example": "perenganito@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345678"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

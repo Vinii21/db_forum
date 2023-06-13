@@ -3,10 +3,12 @@ require("dotenv").config();
 const apiRoutes = require("./routes/index");
 const errorRoutes = require("./routes/errors.routes");
 const initModels = require("./models/initModels");
-
-
+const db = require("./utils/database")
 
 initModels()
+db.sync()
+    .then(()=>console.log("yes"))
+    .catch((error)=>console.log(error))
 
 const PORT = process.env.PORT || 3000;
 

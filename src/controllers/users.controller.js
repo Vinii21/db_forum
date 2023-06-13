@@ -1,81 +1,91 @@
-const Users = require("../models/users.model")
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
-const transporter = require("../utils/mailer");
+const Users = require("../models/users.model");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { sendWelcomeMail } = require("../utils/sendMails");
+require("dotenv").config()
 
-const createUser = async (req, res) => {
-    try{
-        const {username, email, password} = req.body;
-        const hashed = await bcrypt.hash(password, 11);
-        await Users.create({username, email, password: hashed})
-        // de aqui para abajo no se ejecuta si create user tiene un error
+const createUser = async (req, res, next) => {
+  try {
+    // no importa que tan largo sea el nombre de tu funcion o variable
+    // siempre y cuando explique lo que hace
+    const { username, email, password } = req.body;
+    const hashed = await bcrypt.hash(password, 10);
 
-        res.status(201).send()
-        //Enviar correo
-        transporter.sendMail({
-            from: process.env.G_USER,
-            to: email,
-            subject: "Probando Node Mailer",
-            text: "Este sería el mensaje en texto plano",
-            html: "<h1>Bienvenido al Foro</h1> <p>Espero que contribuyas y aprendas demasiado</p>"
-        })
-        .then(()=>console.log("Mensaje enviado"))
-        .catch(error=>console.log(error))
+    await Users.create({ username, email, password: hashed });
+    // de aqui para abajo no se ejecuta si create User tiene un error
+    res.status(201).send();
 
-    } catch (error) {
-       next(error)
-    }
-}
+    // necesitamos mandar un token para identificar esta acción
+    const verifyToken = jwt.sign({ username, email }, process.env.JWT_SECRET_EMAIL_VALIDATION, {
+      algorithm: "HS512",
+      expiresIn: "12h",
+    });
+
+    sendWelcomeMail(email, { username, verifyToken });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const login = async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
-        const user = await Users.findOne({
-            where: {email}
-        })
+  try {
+    const { email, password } = req.body;
+    const user = await Users.findOne({
+      where: { email },
+    });
 
-        if (!user) {
-            return next({
-                status: 400,
-                name: "invalid email",
-                message: "email not exist"
-            })
-        }
-
-        const validPassword = await bcrypt.compare(password, user.password)
-
-        if(!validPassword){
-            return next({
-                status: 400,
-                name: "Invalid password",
-                message: "you shall not pass"
-            })
-        }
-
-        const {firstname, lastname, id, username, rolId} = user;
-
-        //debemos devolver un token para que el usuario logueado 
-        //pueda acceder a los recursos del back
-
-        // generar token
-        const userData = {firstname, lastname, id, username, rolId, email}
-        const token = jwt.sign(userData, "jujutsukaisen", {
-            algorithm: "HS512",
-            expiresIn: "5m"
-        });
-
-        // agregar el token en userData
-        userData.token = token;
-
-
-        res.json(userData)
-
-    } catch (error) {
-        next(error)
+    if (!user) {
+      return next({
+        status: 400,
+        name: "Invalid email",
+        message: "user not exist",
+      });
     }
-}
+
+    if (!user.validUser) {
+      return next({
+        status: 400,
+        name: "email is not verified",
+        message: "User needs verified his/her email",
+      });
+    }
+
+    // comparar las contraseñas
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    if (!validPassword) {
+      return next({
+        status: 400,
+        name: "Invalid password",
+        message: "The password does not match with user email",
+      });
+    }
+    const { firstname, lastname, id, username, rolId } = user;
+
+    // no responder la contraseña
+
+    // debemos devolver un token para que el usuario loggeado
+    // pueda acceder a los recursos del back
+
+    // Genear token
+    const userData = { firstname, lastname, id, username, email, rolId };
+
+    const token = jwt.sign(userData, process.env.JWT_SECRET_LOGIN, {
+      algorithm: "HS512",
+      expiresIn: "5m",
+    });
+    // agregar el token en userData
+    userData.token = token;
+
+    res.json(userData);
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
-    createUser,
-    login
-}
+  createUser,
+  login,
+};
+
+// alguien esta editando
